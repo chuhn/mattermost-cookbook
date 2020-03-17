@@ -61,13 +61,13 @@ directory node['mattermost']['app']['log_settings']['file_location'] do
   action :create
 end
 
-directory node['mattermost']['app']['notification_log_settings'] do
-  owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
-  mode '755'
-  recursive true
-  action :create
-end
+# directory node['mattermost']['app']['notification_log_settings'] do
+#   owner node['mattermost']['config']['user']
+#   group node['mattermost']['config']['user']
+#   mode '755'
+#   recursive true
+#   action :create
+# end
 
 template "#{install_directory}/config/config.json" do
   source 'config.json.erb'
