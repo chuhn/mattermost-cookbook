@@ -101,6 +101,6 @@ systemd_unit 'mattermost.service' do
       WantedBy: 'multi-user.target',
     }
   )
-  verify false
+  verify false if respond_to?(:verify)
   action [:create, :enable, :start]
 end
