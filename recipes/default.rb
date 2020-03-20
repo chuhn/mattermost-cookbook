@@ -5,8 +5,6 @@
 # Copyright:: (c) 2017 The Authors, All Rights Reserved.
 install_directory = "#{node['mattermost']['config']['install_path']}/mattermost"
 
-apt_package 'libcap2-bin' if platform_family?('debian')
-
 user node['mattermost']['config']['user'] do
   action :create
 end
@@ -77,8 +75,16 @@ template "#{install_directory}/config/config.json" do
   notifies :restart, 'systemd_unit[mattermost.service]'
 end
 
-execute "setcap cap_net_bind_service=+ep #{install_directory}/bin/platform" do
-  user 'root'
+# if the mattermost server shall bind to a privileged port
+#  we have to set the CAP_NET_BIND_SERVICE capability
+mattermost_port = node['mattermost']['app']['service_settings']['listen_address'].match(/.*:(\d+)$/)[1].to_i
+
+if mattermost_port < 1024
+  apt_package 'libcap2-bin' if platform_family?('debian')
+
+  execute "setcap cap_net_bind_service=+ep #{install_directory}/bin/platform" do
+    user 'root'
+  end
 end
 
 systemd_unit 'mattermost.service' do
