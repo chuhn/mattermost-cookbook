@@ -75,15 +75,22 @@ directory ::File.dirname(node['mattermost']['config']['path']) do
   action :create
 end
 
-# TODO: move over pristine config.json from tarball instead
-template node['mattermost']['config']['path'] do
-  source 'config.json.erb'
+# # move over pristine config.json from tarball
+remote_file node['mattermost']['config']['path'] do
+  action :create_if_missing
+  source "file:://#{install_directory}/mattermost/config/config.json"
   owner node['mattermost']['config']['user']
   group node['mattermost']['config']['user']
   mode '0640'
   notifies :restart, 'systemd_unit[mattermost.service]'
+  not_if do
+    # do nothing if config.json is in the default location:
+    node['mattermost']['config']['path'] ==
+      "#{install_directory}/config/config.json"
+  end
 end
 
+# configure stuff:
 include_recipe 'mattermost-cookbook::configure'
 
 # if the mattermost server shall bind to a privileged port
