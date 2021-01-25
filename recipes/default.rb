@@ -23,7 +23,7 @@ tar_extract node['mattermost']['package']['url'] do
   checksum node['mattermost']['package']['checksum']
   user node['mattermost']['config']['user']
   group node['mattermost']['config']['user']
-  creates "#{install_directory}/config"
+  creates "#{install_directory}/bin/mattermost"
   action :extract
 end
 
@@ -67,7 +67,15 @@ end
 #   action :create
 # end
 
-template "#{install_directory}/config/config.json" do
+directory ::File.dirname(node['mattermost']['config']['path']) do
+  owner node['mattermost']['config']['user']
+  group node['mattermost']['config']['user']
+  mode '0750'
+  recursive true
+  action :create
+end
+
+template node['mattermost']['config']['path'] do
   source 'config.json.erb'
   owner node['mattermost']['config']['user']
   group node['mattermost']['config']['user']
@@ -94,7 +102,10 @@ systemd_unit 'mattermost.service' do
       After: node['mattermost']['systemd']['after'].join(' '),
     },
     Service: {
-      ExecStart: "#{install_directory}/bin/mattermost",
+      ExecStart: format("%s/bin/mattermost --config %s",
+                        install_directory,
+                        node['mattermost']['config']['path']
+                       ),
       WorkingDirectory: install_directory,
       Restart: 'always',
       StandardOutput: 'syslog',
