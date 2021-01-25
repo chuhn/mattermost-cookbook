@@ -1,8 +1,8 @@
 name 'mattermost-cookbook'
 license 'Apache-2.0'
-version '5.17.1'
+version '6.0.0'
 
-chef_version '>= 12.19' if respond_to?(:chef_version)
+chef_version '>= 12.14' if respond_to?(:chef_version)
 
 maintainer 'Simão Silva'
 maintainer_email 'simao.silva@tecnico.ulisboa.pt'
