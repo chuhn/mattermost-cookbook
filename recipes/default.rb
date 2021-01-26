@@ -11,7 +11,7 @@ end
 
 directory install_directory do
   owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
+  group node['mattermost']['config']['group']
   mode '755'
   recursive true
   action :create
@@ -21,58 +21,28 @@ tar_extract node['mattermost']['package']['url'] do
   download_dir node['mattermost']['config']['install_path']
   target_dir node['mattermost']['config']['install_path']
   checksum node['mattermost']['package']['checksum']
-  user node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
+  # user node['mattermost']['config']['user']
+  # group node['mattermost']['config']['group']
   creates "#{install_directory}/bin/mattermost"
   action :extract
 end
 
-directory node['mattermost']['config']['data_dir'] do
-  owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
-  mode '755'
-  recursive true
-  action :create
-end
+[ node['mattermost']['config']['data_dir'],
+  node['mattermost']['app']['file_settings']['directory'],
+  "#{install_directory}/#{node['mattermost']['app']['plugin_settings']['directory']}",
+  "#{install_directory}/#{node['mattermost']['app']['plugin_settings']['client_directory']}",
+  node['mattermost']['app']['log_settings']['file_location'],
+  # node['mattermost']['app']['notification_log_settings'],
+  ::File.dirname(node['mattermost']['config']['path'])
+].each do |dir|
 
-directory node['mattermost']['app']['file_settings']['directory'] do
-  owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
-  mode '755'
-  recursive true
-  action :create
-end
-
-directory "#{install_directory}/#{node['mattermost']['app']['plugin_settings']['client_directory']}" do
-  owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
-  mode '755'
-  recursive true
-  action :create
-end
-
-directory node['mattermost']['app']['log_settings']['file_location'] do
-  owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
-  mode '755'
-  recursive true
-  action :create
-end
-
-# directory node['mattermost']['app']['notification_log_settings'] do
-#   owner node['mattermost']['config']['user']
-#   group node['mattermost']['config']['user']
-#   mode '755'
-#   recursive true
-#   action :create
-# end
-
-directory ::File.dirname(node['mattermost']['config']['path']) do
-  owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
-  mode '0750'
-  recursive true
-  action :create
+  directory dir do
+    owner node['mattermost']['config']['user']
+    group node['mattermost']['config']['group']
+    mode '0750'
+    recursive true
+    action :create
+  end
 end
 
 # # move over pristine config.json from tarball
@@ -80,7 +50,7 @@ remote_file node['mattermost']['config']['path'] do
   action :create_if_missing
   source "file:://#{install_directory}/mattermost/config/config.json"
   owner node['mattermost']['config']['user']
-  group node['mattermost']['config']['user']
+  group node['mattermost']['config']['group']
   mode '0640'
   notifies :restart, 'systemd_unit[mattermost.service]'
   not_if do
