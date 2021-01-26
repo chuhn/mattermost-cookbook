@@ -1,6 +1,14 @@
-default['mattermost']['packages']['enterprise']['5.29.1'] = {
-  url: 'https://releases.mattermost.com/5.29.1/mattermost-5.29.1-linux-amd64.tar.gz',
-  checksum: '66175918186cf402213143903230cd8a8b4a96c18d2ee50445f303685accb2c7'
+default['mattermost']['packages']['enterprise']['5.31.0'] = {
+  url: 'https://releases.mattermost.com/5.31.0/mattermost-5.31.0-linux-amd64.tar.gz',
+  checksum: '05e4631a1c755925981838a331addf9575e5ff16f5c4ade2354ef66325f3d06d'
+}
+default['mattermost']['packages']['enterprise']['5.30.2'] = {
+  url: 'https://releases.mattermost.com/5.30.2/mattermost-5.30.2-linux-amd64.tar.gz',
+  checksum: '80b355a25a4adf5758ac4dd27f6f8a0388255f09d66ad0868dd2b8c2ece6dd1d'
+}
+default['mattermost']['packages']['enterprise']['5.29.2'] = {
+  url: 'https://releases.mattermost.com/5.29.2/mattermost-5.29.2-linux-amd64.tar.gz',
+  checksum: '6e0741f06fbbe6c11707a18b9cfb1a80356d7ca32378b109657a0b29b3b246d0'
 }
 default['mattermost']['packages']['enterprise']['5.28.2'] = {
   url: 'https://releases.mattermost.com/5.28.2/mattermost-5.28.2-linux-amd64.tar.gz',
@@ -214,9 +222,17 @@ default['mattermost']['packages']['enterprise']['2.1.0'] = {
   url: 'https://releases.mattermost.com/2.1.0/mattermost-enterprise-2.1.0-linux-amd64.tar.gz',
   checksum: '9454c3daacae602025b03950590e3f1ecd540b85a4bb7ad73bdca212ba85cf7a'
 }
-default['mattermost']['packages']['team']['5.29.1'] = {
-  url: 'https://releases.mattermost.com/5.29.1/mattermost-team-5.29.1-linux-amd64.tar.gz',
-  checksum: '220a3ca032d288a01c62bf4074d20c854f63c2837b27da47ab1ad0e70e616221'
+default['mattermost']['packages']['team']['5.31.0'] = {
+  url: 'https://releases.mattermost.com/5.31.0/mattermost-team-5.31.0-linux-amd64.tar.gz',
+  checksum: '3c9e862df1166000566772876f38713cf1eb8b64b675bcef3819fb9cc255d7bc'
+}
+default['mattermost']['packages']['team']['5.30.2'] = {
+  url: 'https://releases.mattermost.com/5.30.2/mattermost-team-5.30.2-linux-amd64.tar.gz',
+  checksum: '3540a350e4a7e4f4dd23798713cbbf71167de2423e11df51d594b75c984c11a8'
+}
+default['mattermost']['packages']['team']['5.29.2'] = {
+  url: 'https://releases.mattermost.com/5.29.2/mattermost-team-5.29.2-linux-amd64.tar.gz',
+  checksum: '10dff87226298c22254f56825877c8639a882dc04c42e82bb34cfdbef8b06bae'
 }
 default['mattermost']['packages']['team']['5.28.2'] = {
   url: 'https://releases.mattermost.com/5.28.2/mattermost-team-5.28.2-linux-amd64.tar.gz',
