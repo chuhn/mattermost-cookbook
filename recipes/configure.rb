@@ -1,12 +1,30 @@
 #
+# Cookbook Name:: mattermost-cookbook
+# Recipes:: configure
 #
+# Copyright 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH
+#
+# Authors:
+#  Christopher Huhn   <C.Huhn@gsi.de>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
-node['mattermost']['app'].each do |group,settings|
+node['mattermost']['app'].each do |group, settings|
   settings.each do |key, value|
     mattermost_cookbook_config "#{group}.#{key}" do
       value value.to_s
-      ignore_failure true
+      ignore_failure true # ???
     end
   end
 end
@@ -14,49 +32,19 @@ end
 #
 # database setup (adapted from config.json.erb template)
 #
-#   "SqlSettings": {
-#        "DriverName": "<%= node['mattermost']['app']['sql_settings']['driver_name'] %>",
-# replica_count = node['mattermost']['app']['sql_settings']['data_source_replicas'].count
-if node['mattermost']['database']['driver_name'] == 'postgres'
-  mattermost_cookbook_config  'SqlSettings.DataSource' do
-    value format("postgres://%s:%s@%s:%i/%s?sslmode=disable&connect_timeout=10",
-                 node['mattermost']['database']['username'],
-                 node['mattermost']['database']['password'],
-                 node['mattermost']['database']['address'],
-                 node['mattermost']['database']['port'],
-                 node['mattermost']['database']['name']
-                )
-  end
-    #     "DataSourceReplicas": [
-    # <%- node['mattermost']['app']['sql_settings']['data_source_replicas'].each_with_index do |replica, i| %>
-    #     <% if (i < ( replica_count - 1 )) %>
-    #     <% Chef::Log.info("Iterator is #{i}") %>
-    #         "postgres://<%= node['mattermost']['app']['sql_settings']['username'] %>:<%= node['mattermost']['app']['sql_settings']['password'] %>@<%= replica %>:<%= node['mattermost']['app']['sql_settings']['port'] %>/<%= node['mattermost']['app']['sql_settings']['database_name'] %>?sslmode=disable&connect_timeout=10",
-    #     <% else %>
-    #         "postgres://<%= node['mattermost']['app']['sql_settings']['username'] %>:<%= node['mattermost']['app']['sql_settings']['password'] %>@<%= replica %>:<%= node['mattermost']['app']['sql_settings']['port'] %>/<%= node['mattermost']['app']['sql_settings']['database_name'] %>?sslmode=disable&connect_timeout=10"
-    #     <% end %>
-    # <%- end %>
-    #     ],
-else
-  # -> mysql
-  mattermost_cookbook_config  'SqlSettings.DataSource' do
-    value format('%s:%s@tcp(%s:%i)/%s?charset=utf8mb4,utf8;readTimeout=30s;writeTimeout=30s',
-                 node['mattermost']['database']['username'],
-                 node['mattermost']['database']['password'],
-                 node['mattermost']['database']['address'],
-                 node['mattermost']['database']['port'],
-                 node['mattermost']['database']['name']
-                )
-  end
+
+mattermost_cookbook_config 'SqlSettings.DataSource' do
+  value format_dsn
 end
 
-#   "DataSourceReplicas": [
-#   <%- node['mattermost']['app']['sql_settings']['data_source_replicas'].each_with_index do |replica, i| %>
-#             <% if (i < ( replica_count - 1 )) %>
-#                   "<%= node['mattermost']['app']['sql_settings']['username'] %>:<%= node['mattermost']['app']['sql_settings']['password'] %>@tcp(<%= r  eplica %>:<%= node['mattermost']['app']['sql_settings']['port'] %>)/<%= node['mattermost']['app']['sql_settings']['name'] %>?charset=utf8m  b4,utf8&readTimeout=30s&writeTimeout=30s",
-#         <% else   %>
-#             "<%= n  ode['mattermost']['app']['sql_settings']['username'] %>:<%= node['mattermost']['app']['sql_settings']['password'] %>@tcp(<%= replica %>:<%  = node['mattermost']['app']['sql_settings']['port'] %>)/<%= node['mattermost']['app']['sql_settings']['name'] %>?charset=utf8mb4,utf8&read  Timeout=30s&writeTimeout=30s"
-#         <% end %>
-#     <%- end %>
-#         ],
-# <% end %>
+mattermost_cookbook_config 'SqlSettings.DataSourceReplicas' do
+  value node['mattermost']['app']['sql_settings']['data_source_replicas'].map do |replica|
+    format_dsn(hostname: replica)
+  end.join(',')
+end
+
+mattermost_cookbook_config 'SqlSettings.DataSourceSearchReplicas' do
+  value node['mattermost']['app']['sql_settings']['data_source_search_replicas'].map do |replica|
+    format_dsn(hostname: replica)
+  end.join(',')
+end
