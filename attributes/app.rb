@@ -135,8 +135,7 @@ default_unless['mattermost']['app']['service_settings']['listen_address'] = ':80
 #   'ios_min_version' => '',
 # }
 
-# default_unless['mattermost']['app']['sql_settings'] = {
-#   'driver_name' => 'mysql',
+default_unless['mattermost']['app']['sql_settings']['driver_name'] = 'mysql'
 #   'address' => 'localhost',
 #   'port' => '3306',
 #   'username' => 'mmuser',
