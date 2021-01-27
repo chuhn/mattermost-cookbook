@@ -37,14 +37,19 @@ mattermost_cookbook_config 'SqlSettings.DataSource' do
   value format_dsn
 end
 
+data_source_replicas = node['mattermost']['app']['sql_settings']['data_source_replicas'].map do |replica|
+  format_dsn(hostname: replica)
+end.join(',')
+
 mattermost_cookbook_config 'SqlSettings.DataSourceReplicas' do
-  value node['mattermost']['app']['sql_settings']['data_source_replicas'].map do |replica|
-    format_dsn(hostname: replica)
-  end.join(',')
+  value data_source_replicas
 end
 
+
+data_source_search_replicas = node['mattermost']['app']['sql_settings']['data_source_search_replicas'].map do |replica|
+  format_dsn(hostname: replica)
+end.join(',')
+
 mattermost_cookbook_config 'SqlSettings.DataSourceSearchReplicas' do
-  value node['mattermost']['app']['sql_settings']['data_source_search_replicas'].map do |replica|
-    format_dsn(hostname: replica)
-  end.join(',')
+  value data_source_search_replicas
 end
