@@ -26,7 +26,10 @@ def format_dsn(driver: node['mattermost']['app']['sql_settings']['driver_name'],
                hostname: node['mattermost']['database']['address'],
                port: node['mattermost']['database']['port'],
                db: node['mattermost']['database']['name'])
-  format = case driver
+
+  Chef::Log.debug('format_dsn: ' + [driver, username, password, hostname, port, db].join(', '))
+
+  format = case driver.to_s
            when 'postgres'
              'postgres://%s:%s@%s:%i/%s?sslmode=disable&connect_timeout=10'
            when 'mysql'
