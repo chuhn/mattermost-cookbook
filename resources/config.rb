@@ -35,24 +35,26 @@ def transform_key(name)
   name.split('_').map{|e| e[0].upcase + e[1..-1]}.join
 end
 
-def configured?(name_elements, value)
-  config = JSON.parse(::File.read(config_json))
-  name_elements.each do |key|
-    return false unless config.key?(key)
-    config = config[key]
+load_current_value do |new_resource|
+  config = JSON.parse(::File.read(new_resource.config_json))
+  new_resource.name.split('.').each do |key|
+    tkey = transform_key(key)
+    return unless config.key?(tkey)
+    config = config[tkey]
   end
-  config == value
+  value config
 end
 
 action :set do
-  transformed_key = name.split('.').map{|e| transform_key(e)}
-  execute format('%s --config %s config set %s %s',
-                 node['mattermost']['config']['install_path'] +
-                 '/mattermost/bin/mattermost',
-                 config_json,
-                 transformed_key.join('.'),
-                 value) do
-    user   node['mattermost']['config']['user']
-    not_if { configured?(transformed_key, value) }
+  converge_if_changed do
+    transformed_key = name.split('.').map{|e| transform_key(e)}
+    execute format('%s --config "%s" config set "%s" "%s"',
+                   node['mattermost']['config']['install_path'] +
+                   '/mattermost/bin/mattermost',
+                   config_json,
+                   transformed_key.join('.'),
+                   value) do
+      user   node['mattermost']['config']['user']
+    end
   end
 end
