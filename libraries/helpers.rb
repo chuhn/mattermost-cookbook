@@ -51,9 +51,10 @@ end
 def mm_find_best_version(version_constraint,
                          edition: node['mattermost']['edition'])
   node['mattermost']['packages'][edition].keys.select do |v|
+    gem_version = Gem::Version.new(v)
     Gem::Requirement.new("~> #{version_constraint}")
-      .satisfied_by?(v)
-  end.sort_by { |v| Gem::Version.new(v) }.last
+      .satisfied_by?(gem_version)
+  end.sort_by { |v| gem_version }.last
 end
 
 
