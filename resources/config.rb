@@ -48,12 +48,14 @@ end
 action :set do
   converge_if_changed do
     transformed_key = name.split('.').map{|e| transform_key(e)}
-    execute format('%s --config "%s" config set "%s" "%s"',
+    cmd = format('%s --config "%s" config set "%s" "%s"',
                    node['mattermost']['config']['install_path'] +
                    '/mattermost/bin/mattermost',
                    config_json,
                    transformed_key.join('.'),
-                   value) do
+                   value)
+    Chef::Log.debug cmd
+    execute cmd do
       user   node['mattermost']['config']['user']
     end
   end
