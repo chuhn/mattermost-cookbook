@@ -20,6 +20,10 @@
 # limitations under the License.
 #
 
+
+#
+# turn the database connection params into a connection string
+#
 def format_dsn(driver: node['mattermost']['app']['sql_settings']['driver_name'],
                username: node['mattermost']['database']['username'],
                password: node['mattermost']['database']['password'],
@@ -27,10 +31,10 @@ def format_dsn(driver: node['mattermost']['app']['sql_settings']['driver_name'],
                port: node['mattermost']['database']['port'],
                db: node['mattermost']['database']['name'])
 
-  Chef::Log.debug('format_dsn: ' + [driver, username, password, hostname, port, db].join(', '))
-
   format = case driver.to_s
            when 'postgres'
+             # FIXME: why do we turn off SSL unconditionally here?
+             #  Does not seem like a good idea
              'postgres://%s:%s@%s:%i/%s?sslmode=disable&connect_timeout=10'
            when 'mysql'
              '%s:%s@tcp(%s:%i)/%s?charset=utf8mb4,utf8;readTimeout=30s;writeTimeout=30s'
@@ -38,4 +42,19 @@ def format_dsn(driver: node['mattermost']['app']['sql_settings']['driver_name'],
              raise 'Only postgres and mysql are supported'
            end
   format(format, username, password, hostname, port, db)
+end
+
+
+#
+# gather mattermost version information
+#
+def mm_version_info
+  cmd = format('%s --config "%s" version',
+               node['mattermost']['config']['install_path'] +
+               '/mattermost/bin/mattermost',
+               node['mattermost']['config']['path'])
+  version_query = Mixlib::ShellOut.new(cmd)
+  # TODO: add some better error handling?
+  version_query.error!
+  version_query.stdout.scan(%r{(.*?):(.*)}).to_h
 end
