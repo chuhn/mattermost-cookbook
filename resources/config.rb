@@ -42,7 +42,7 @@ load_current_value do |new_resource|
     return unless config.key?(tkey)
     config = config[tkey]
   end
-  value config
+  value config.to_s
 end
 
 action :set do
@@ -56,7 +56,7 @@ action :set do
                    value)
     Chef::Log.debug cmd
     execute cmd do
-      user   node['mattermost']['config']['user']
+      user node['mattermost']['config']['user']
     end
   end
 end
