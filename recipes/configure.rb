@@ -21,9 +21,9 @@
 #
 
 node['mattermost']['app'].each do |group, settings|
-  settings.each do |key, value|
+  settings.each do |key, val|
     mattermost_cookbook_config "#{group}.#{key}" do
-      value value.to_s
+      value val.to_s
       ignore_failure true # ???
     end
   end
