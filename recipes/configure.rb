@@ -37,19 +37,23 @@ mattermost_cookbook_config 'SqlSettings.DataSource' do
   value format_dsn
 end
 
-data_source_replicas = node['mattermost']['app']['sql_settings']['data_source_replicas'].map do |replica|
-  format_dsn(hostname: replica)
+if node['mattermost']['app']['sql_settings']['data_source_replicas']
+  data_source_replicas = node['mattermost']['app']['sql_settings']['data_source_replicas'].map do |replica|
+    format_dsn(hostname: replica)
+  end
+
+  mattermost_cookbook_config 'SqlSettings.DataSourceReplicas' do
+    value data_source_replicas.join(',')
+  end
 end
 
-mattermost_cookbook_config 'SqlSettings.DataSourceReplicas' do
-  value data_source_replicas.join(',')
-end
 
+if node['mattermost']['app']['sql_settings']['data_source_search_replicas']
+  data_source_search_replicas = node['mattermost']['app']['sql_settings']['data_source_search_replicas'].map do |replica|
+    format_dsn(hostname: replica)
+  end
 
-data_source_search_replicas = node['mattermost']['app']['sql_settings']['data_source_search_replicas'].map do |replica|
-  format_dsn(hostname: replica)
-end
-
-mattermost_cookbook_config 'SqlSettings.DataSourceSearchReplicas' do
-  value data_source_search_replicas.join(',')
+  mattermost_cookbook_config 'SqlSettings.DataSourceSearchReplicas' do
+    value data_source_search_replicas.join(',')
+  end
 end
