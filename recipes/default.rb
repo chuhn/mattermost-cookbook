@@ -17,10 +17,15 @@ directory install_directory do
   action :create
 end
 
-tar_extract node['mattermost']['package']['url'] do
+wanted_version = mm_find_best_version(node['mattermost']['version'])
+
+url = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['url']
+csum = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['checksum']
+
+tar_extract url do
   download_dir node['mattermost']['config']['install_path']
   target_dir node['mattermost']['config']['install_path']
-  checksum node['mattermost']['package']['checksum']
+  checksum csum
   # user node['mattermost']['config']['user']
   # group node['mattermost']['config']['group']
   creates "#{install_directory}/bin/mattermost"

@@ -1,6 +1,6 @@
 name 'mattermost-cookbook'
 license 'Apache-2.0'
-version '6.0.0'
+version '6.1.0'
 
 chef_version '>= 12.14' if respond_to?(:chef_version)
 

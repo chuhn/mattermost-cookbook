@@ -45,8 +45,20 @@ def format_dsn(driver: node['mattermost']['app']['sql_settings']['driver_name'],
 end
 
 
+# lookup the highest available mattermost release that fullfils the given
+#  version contraint:
 #
-# gather mattermost version information
+def mm_find_best_version(version_constraint,
+                         edition: node['mattermost']['edition'])
+  node['mattermost']['packages'][edition].keys.select do |v|
+    Gem::Requirement.new("~> #{version_constraint}")
+      .satisfied_by?(v)
+  end.sort_by { |v| Gem::Version.new(v) }.last
+end
+
+
+#
+# gather version information about the currently installed mattermost
 #
 def mm_version_info
   cmd = format('%s --config "%s" version',

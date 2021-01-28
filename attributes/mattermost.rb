@@ -1,7 +1,5 @@
-default['mattermost']['package'] = {
-  'url' => 'https://releases.mattermost.com/5.17.1/mattermost-5.17.1-linux-amd64.tar.gz',
-  'checksum' => '2da727da93b0d193eb3dfdfadb2534eb43dbbf68bce84074d3cc89619bb8f263',
-}
+default['mattermost']['version'] = '5'
+default['mattermost']['edition'] = 'team'
 
 default['mattermost']['config']['install_path'] = '/opt'
 default['mattermost']['config']['user']         = 'mattermost'
