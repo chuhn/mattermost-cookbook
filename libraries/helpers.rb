@@ -49,7 +49,7 @@ end
 #  version contraint:
 #
 def mm_find_best_version(version,
-                         edition: node['mattermost']['edition']
+                         edition: node['mattermost']['edition'],
                          constraint: '~>')
   node['mattermost']['packages'][edition].keys.map do |v|
     # turn all elements into Gem::Version objects
