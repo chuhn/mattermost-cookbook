@@ -51,14 +51,20 @@ end
 def mm_find_best_version(version,
                          edition: node['mattermost']['edition'],
                          constraint: '~>')
-  node['mattermost']['packages'][edition].keys.map do |v|
+  result = node['mattermost']['packages'][edition].keys.map do |v|
     # turn all elements into Gem::Version objects
     Gem::Version.new(v)
   end.select do |v|
     # filter matching versions
     Gem::Requirement.new("#{constraint} #{version}")
       .satisfied_by?(v)
-  end.sort.last # return highest matching version
+  end
+
+  if result.empty?
+    raise "No suitable version found for '#{constraint} #{version}'"
+  end
+
+  result.sort.last.to_s # return highest matching version
 end
 
 
