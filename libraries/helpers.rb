@@ -48,13 +48,17 @@ end
 # lookup the highest available mattermost release that fullfils the given
 #  version contraint:
 #
-def mm_find_best_version(version_constraint,
-                         edition: node['mattermost']['edition'])
-  node['mattermost']['packages'][edition].keys.select do |v|
-    gem_version = Gem::Version.new(v)
-    Gem::Requirement.new("~> #{version_constraint}")
-      .satisfied_by?(gem_version)
-  end.sort_by { |v| gem_version }.last
+def mm_find_best_version(version,
+                         edition: node['mattermost']['edition']
+                         constraint: '~>')
+  node['mattermost']['packages'][edition].keys.map do |v|
+    # turn all elements into Gem::Version objects
+    Gem::Version.new(v)
+  end.select do |v|
+    # filter matching versions
+    Gem::Requirement.new("#{constraint} #{version}")
+      .satisfied_by?(v)
+  end.sort.last # return highest matching version
 end
 
 
