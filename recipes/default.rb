@@ -19,6 +19,8 @@ end
 
 wanted_version = mm_find_best_version(node['mattermost']['version'])
 
+Chef::Log.debug "Installing mattermost #{wanted_version}, #{node['mattermost']['edition']} edition"
+
 url = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['url']
 csum = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['checksum']
 
