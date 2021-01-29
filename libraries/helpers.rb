@@ -51,7 +51,7 @@ end
 def mm_find_best_version(version,
                          edition: node['mattermost']['edition'],
                          constraint: '~>')
-  result = node['mattermost']['packages'][edition].keys.map do |v|
+  versions = node['mattermost']['packages'][edition].keys.map do |v|
     # turn all elements into Gem::Version objects
     Gem::Version.new(v)
   end.select do |v|
@@ -60,11 +60,15 @@ def mm_find_best_version(version,
       .satisfied_by?(v)
   end
 
-  if result.empty?
+  if versions.empty?
     raise "No suitable version found for '#{constraint} #{version}'"
   end
 
-  result.sort.last.to_s # return highest matching version
+  best_version = versions.sort.last.to_s # pick highest matching version
+
+  Chef::Log.debug "Best version found for '#{constraint} #{version}': #{best_version}"
+
+  best_version
 end
 
 
