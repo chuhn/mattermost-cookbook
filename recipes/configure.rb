@@ -21,6 +21,9 @@
 #
 
 node['mattermost']['app'].each do |group, settings|
+  # some sql_settings require different handling (see below)
+  next if group == 'sql_settings'
+
   settings.each do |key, val|
     mattermost_cookbook_config "#{group}.#{key}" do
       value val.to_s
@@ -28,6 +31,7 @@ node['mattermost']['app'].each do |group, settings|
     end
   end
 end
+
 
 #
 # database setup (adapted from config.json.erb template)
