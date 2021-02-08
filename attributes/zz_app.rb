@@ -136,13 +136,19 @@ default_unless['mattermost']['app']['service_settings']['listen_address'] = ':80
 # }
 
 default_unless['mattermost']['app']['sql_settings']['driver_name'] = 'mysql'
-#   'address' => 'localhost',
-#   'port' => '3306',
-#   'username' => 'mmuser',
-#   'password' => 'mostest',
-#   'database_name' => 'mattermost_test',
-default_unless['mattermost']['app']['sql_settings']['data_source_replicas'] = []
-default_unless['mattermost']['app']['sql_settings']['data_source_search_replicas'] = []
+default_unless['mattermost']['app']['sql_settings']['address'] =
+  node['mattermost']['database']['address']
+default_unless['mattermost']['app']['sql_settings']['port'] =
+  node['mattermost']['database']['port']
+default_unless['mattermost']['app']['sql_settings']['username'] =
+  node['mattermost']['database']['username']
+default_unless['mattermost']['app']['sql_settings']['password'] =
+  node['mattermost']['database']['password']
+default_unless['mattermost']['app']['sql_settings']['database_name'] =
+  node['mattermost']['database']['name']
+# Setting replicas to an empty array breaks mattermost configuration
+# default_unless['mattermost']['app']['sql_settings']['data_source_replicas'] = []
+# default_unless['mattermost']['app']['sql_settings']['data_source_search_replicas'] = []
 #   'conn_max_lifetime_milliseconds' => 3600000,
 #   'max_idle_conns' => 20,
 #   'max_open_conns' => 300,
