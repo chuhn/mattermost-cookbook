@@ -82,6 +82,6 @@ def mm_version_info
                node['mattermost']['config']['path'])
   version_query = Mixlib::ShellOut.new(cmd)
   # TODO: add some better error handling?
-  version_query.error!
+  # version_query.error! # ???
   version_query.stdout.scan(%r{(.*?):(.*)}).to_h
 end
