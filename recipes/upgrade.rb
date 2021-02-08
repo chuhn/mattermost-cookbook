@@ -11,7 +11,7 @@ url = node['mattermost']['packages'][node['mattermost']['edition']][wanted_versi
 checksum = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['checksum']
 
 directory "node['mattermost']['config']['install_path']/mattermost" do
-  action: :delete
+  action :delete
 end
 
 tar_extract url do
