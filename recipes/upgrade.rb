@@ -14,7 +14,8 @@ directory "node['mattermost']['config']['install_path']/mattermost" do
   action :delete
 end
 
-tar_extract url do
+tar_extract "mattermost upgrade #{current_version} ->  #{wanted_version}"  do
+  source url
   download_dir node['mattermost']['config']['install_path']
   target_dir node['mattermost']['config']['install_path']
   checksum checksum

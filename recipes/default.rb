@@ -24,7 +24,8 @@ Chef::Log.debug "Installing mattermost #{wanted_version}, #{node['mattermost']['
 url = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['url']
 csum = node['mattermost']['packages'][node['mattermost']['edition']][wanted_version]['checksum']
 
-tar_extract url do
+tar_extract "mattermost initial install #{wanted_version}"  do
+  source url
   download_dir node['mattermost']['config']['install_path']
   target_dir node['mattermost']['config']['install_path']
   checksum csum
