@@ -85,3 +85,11 @@ def mm_version_info
   # version_query.error! # ???
   version_query.stdout.scan(%r{(.*?):(.*)}).to_h
 end
+
+# attribute names in this cookbook have been transformed
+#  from CamelCase to snake_case
+#  make a guess at converting it back:
+def mm_transform_key(name)
+  # this is like &capitalize but it keeps the case of the following characters:
+  name.split('_').map{|e| e[0].upcase + e[1..-1]}.join
+end
