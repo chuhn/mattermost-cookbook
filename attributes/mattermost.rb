@@ -7,6 +7,8 @@ default_unless['mattermost']['config']['group']        = node['mattermost']['con
 default_unless['mattermost']['config']['data_dir']     = '/opt/mattermost/data'
 default_unless['mattermost']['config']['server_name']  = 'localhost'
 
+default_unless['mattermost']['config']['mmctl_socket']  = '/var/tmp/mattermost_local.socket'
+
 default_unless['mattermost']['config']['path'] =
   node['mattermost']['config']['install_path'] + '/mattermost/config/config.json'
 
