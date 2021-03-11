@@ -40,14 +40,19 @@ end
 
 action :set do
   converge_if_changed do
-    transformed_key = name.split('.').map{|e| mm_transform_key(e)}.join('.')
+    transformed_key = new_resource.name.split('.').map{|e| mm_transform_key(e)}.join('.')
     cmd = format('%s --local config set "%s" "%s"',
                    node['mattermost']['config']['install_path'] +
                    '/mattermost/bin/mmctl',
                    transformed_key,
-                   value)
+                   new_resource.value)
     # Chef::Log.debug cmd
     execute "Updating #{transformed_key}" do
+      environment(
+        # the path to the socket can only be set via an env var
+        #  cf. https://github.com/mattermost/docs/pull/4366
+        MMCTL_LOCAL_SOCKET_PATH: new_resource.socket
+      )
       command cmd
       user node['mattermost']['config']['user']
     end
