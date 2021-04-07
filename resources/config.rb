@@ -24,7 +24,7 @@
 #
 
 property :name, String, name_attribute: true
-property :value, String
+property :value, [String, TrueClass, FalseClass], coerce: proc {|v| v.to_s}
 property :config_json, String, default: node['mattermost']['config']['path']
 
 # attribute names in this cookbook have been transformed
@@ -47,16 +47,26 @@ end
 
 action :set do
   converge_if_changed do
-    transformed_key = name.split('.').map{|e| transform_key(e)}
+    transformed_key = new_resource.name.split('.').map{|e| transform_key(e)}.join('.')
+
+    service 'mattermost' do
+      action :nothing
+    end
+
     cmd = format('%s --config "%s" config set "%s" "%s"',
                    node['mattermost']['config']['install_path'] +
                    '/mattermost/bin/mattermost',
-                   config_json,
-                   transformed_key.join('.'),
-                   value)
-    Chef::Log.debug cmd
-    execute cmd do
+                   new_resource.config_json,
+                   transformed_key,
+                   new_resource.value)
+    # Chef::Log.debug cmd
+    execute "Updating #{transformed_key}" do
+      command cmd
       user node['mattermost']['config']['user']
+      # mattermost must not run while the config
+      notifies :stop, 'service[mattermost]', :before
+      # restart will be handled by service resource in default recipe
+      # notifies :start,  'service[mattermost]'
     end
   end
 end
