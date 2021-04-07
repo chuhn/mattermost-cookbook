@@ -20,22 +20,49 @@
 # limitations under the License.
 #
 
-node['mattermost']['app'].each do |group, settings|
-  # some sql_settings require different handling (see below)
-  next if group == 'sql_settings'
+# enable local mode first:
+# This has to happen before mattermost_cookbook_mmctl becomes available
+mattermost_cookbook_config 'ServiceSettings.LocalModeSocketLocation' do
+  value node['mattermost']['config']['mmctl_socket']
+end
 
-  settings.each do |key, val|
-    mattermost_cookbook_config "#{group}.#{key}" do
-      value val.to_s
+mattermost_cookbook_config 'ServiceSettings.EnableLocalMode' do
+  value true
+  notifies :restart, 'service[mattermost]', :immediately
+end
+
+node['mattermost']['app'].each do |group, settings|
+  case group
+  when 'sql_settings'
+    # some sql_settings require different handling (see below)
+    next
+  else
+    settings.each do |key, val|
+      # make sure TLS is turned on after certificates have been configured
+      next if key == 'connection_security'
+      mattermost_cookbook_mmctl "#{group}.#{key}" do
+        value val.to_s
+        ignore_failure true # ???
+      end
+    end
+
+    # finally configure connection security:
+    mattermost_cookbook_mmctl "#{group}.ConnectionSecurity" do
+      value settings['connection_security']
       ignore_failure true # ???
+      only_if { settings.key?('connection_security') }
+      notifies :restart, 'service[mattermost]'
     end
   end
 end
 
-
 #
 # database setup (adapted from config.json.erb template)
 #
+
+mattermost_cookbook_config 'SqlSettings.DriverName' do
+  value node['mattermost']['app']['sql_settings']['driver_name']
+end
 
 mattermost_cookbook_config 'SqlSettings.DataSource' do
   value format_dsn
